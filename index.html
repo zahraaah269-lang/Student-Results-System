@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class Student {
+    constructor(id, name, grades, attendance) {
+        this.id = id;
+        this.name = name;
+        this.grades = grades;
+        this.attendance = attendance;
+    }
+
+    calculateAverage() {
+        const total = this.grades.reduce((acc, grade) => acc + grade, 0);
+        return Number((total / this.grades.length).toFixed(2));
+    }
+
+    getGrade(average = this.calculateAverage()) {
+        if (average >= 90) {
+            return 'A';
+        } else if (average >= 80) {
+            return 'B';
+        } else if (average >= 70) {
+            return 'C';
+        } else if (average >= 60) {
+            return 'D';
+        } else if (average >= 50) {
+            return 'E';
+        } else {
+            return 'F';
+        }
+    }
+
+    getFinalStatus() {
+        const average = this.calculateAverage();
+        if (average >= 50 && this.attendance >= 75) {
+            return "ناجح";
+        } else {
+            return "يحتاج مراجعة";
+        }
+    }
+}
+
+const studentsList = [
+    new Student(101, "أحمد علي", [85, 92, 88], 90),
+    new Student(102, "سارة محمود", [42, 45, 48], 80),
+    new Student(103, "عمر خالد", [40, 48, 44], 78),
+    new Student(104, "مريم حسن", [68, 74, 71], 85)
+];
+
+const strugglingStudents = studentsList.filter(student => {
+    const avg = student.calculateAverage();
+    return avg >= 40 && avg <= 49;
+});
+
+const gracedStudents = strugglingStudents.map(student => {
+    const originalAvg = student.calculateAverage();
+    const adjustedAvg = Number((originalAvg + 5).toFixed(2));
+    return {
+        id: student.id,
+        name: student.name,
+        attendance: `${student.attendance}%`,
+        originalAverage: originalAvg,
+        adjustedAverage: adjustedAvg,
+        newGrade: student.getGrade(adjustedAvg),
+        newStatus: (adjustedAvg >= 50 && student.attendance >= 75) ? "ناجح" : "يحتاج مراجعة"
+    };
+});
+
+const totalAdjustedAverages = gracedStudents.reduce((sum, student) => {
+    return sum + student.adjustedAverage;
+}, 0);
+
+const overallGracedAverage = gracedStudents.length > 0 
+    ? Number((totalAdjustedAverages / gracedStudents.length).toFixed(2)) 
+    : 0;
+
+studentsList.forEach(student => {
+    const avg = student.calculateAverage();
+    const grade = student.getGrade(avg);
+    const status = student.getFinalStatus();
+    console.log(`الاسم: ${student.name} | المتوسط: ${avg} | التقدير: ${grade} | النتيجة: ${status}`);
+});
+
+console.log(gracedStudents);
+
+console.log(`متوسط درجات الطلاب المتعثرين بعد التعديل: ${overallGracedAverage}`);
+    </script>
+</body>
+</html>
