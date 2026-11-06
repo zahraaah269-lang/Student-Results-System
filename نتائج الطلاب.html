@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة وتحليل نتائج الطلاب</title>
+</head>
+<body>
+
+    <h1>نظام إدارة وتحليل نتائج الطلاب</h1>
+    <p>افتحي Console لمشاهدة التقرير.</p>
+
+    <script>
+        // 1. إنشاء كلاس الطالب
+        class Student {
+            constructor(id, name, grades, attendance) {
+                this.id = id;
+                this.name = name;
+                this.grades = grades;
+                this.attendance = attendance;
+            }
+
+            // 2. حساب متوسط الدرجات باستخدام reduce
+            calculateAverage() {
+                const total = this.grades.reduce(
+                    (sum, grade) => sum + grade, 0
+                );
+
+                return total / this.grades.length;
+            }
+
+            // 3. تحديد التقدير بالحروف
+            getGrade(average) {
+                if (average >= 90) {
+                    return "A";
+                } else if (average >= 80) {
+                    return "B";
+                } else if (average >= 70) {
+                    return "C";
+                } else if (average >= 60) {
+                    return "D";
+                } else if (average >= 50) {
+                    return "E";
+                } else {
+                    return "F";
+                }
+            }
+
+            // 4. تحديد النتيجة النهائية
+            getResult() {
+                const average = this.calculateAverage();
+
+                if (average >= 50 && this.attendance >= 75) {
+                    return "ناجح";
+                } else {
+                    return "يحتاج مراجعة";
+                }
+            }
+        }
+
+        // 5. إنشاء مصفوفة الطلاب
+        const studentsList = [
+            new Student(101, "أحمد", [90, 85, 95], 95),
+            new Student(102, "مريم", [45, 48, 42], 80),
+            new Student(103, "علي", [40, 44, 45], 90),
+            new Student(104, "سارة", [70, 75, 80], 70)
+        ];
+
+        // 6. طباعة تقرير كل طالب
+        console.log("===== تقرير نتائج الطلاب =====");
+
+        studentsList.forEach(student => {
+            const average = student.calculateAverage();
+
+            console.log({
+                id: student.id,
+                name: student.name,
+                average: average.toFixed(2),
+                grade: student.getGrade(average),
+                result: student.getResult()
+            });
+        });
+
+        // 7. استخراج الطلاب المتعثرين باستخدام filter
+        const strugglingStudents = studentsList.filter(student => {
+            const average = student.calculateAverage();
+            return average >= 40 && average <= 49;
+        });
+
+        // 8. إضافة 5 درجات رأفة باستخدام map
+        const studentsAfterGrace = strugglingStudents.map(student => {
+            const oldAverage = student.calculateAverage();
+            const newAverage = oldAverage + 5;
+
+            return {
+                id: student.id,
+                name: student.name,
+                oldAverage: Number(oldAverage.toFixed(2)),
+                graceMarks: 5,
+                newAverage: Number(newAverage.toFixed(2)),
+                newGrade: student.getGrade(newAverage)
+            };
+        });
+
+        // 9. جمع المتوسطات الجديدة باستخدام reduce
+        const totalNewAverages = studentsAfterGrace.reduce(
+            (sum, student) => sum + student.newAverage,
+            0
+        );
+
+        // 10. حساب المتوسط العام مع الحماية من القسمة على صفر
+        const graceAverage = studentsAfterGrace.length > 0
+            ? totalNewAverages / studentsAfterGrace.length
+            : 0;
+
+        // 11. طباعة تقرير لجنة الرأفة
+        console.log("===== الطلاب المستفيدون من الرأفة =====");
+        console.table(studentsAfterGrace);
+
+        console.log(
+            "عدد الطلاب المتعثرين:",
+            studentsAfterGrace.length
+        );
+
+        console.log(
+            "متوسط درجات المتعثرين بعد الرأفة:",
+            graceAverage.toFixed(2)
+        );
+
+    </script>
+
+</body>
+</html>
